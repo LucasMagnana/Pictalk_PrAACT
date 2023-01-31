@@ -1,93 +1,48 @@
-import pandas as pd
-import unicodedata
-import re
-import random
-
 import torch
-import torch.nn as nn
-from torch import optim
-import matplotlib.pyplot as plt
 
 
-from Lang import Lang
-from NN import RNN
+from transformers import AutoTokenizer, CamembertForMaskedLM
 
-MAX_SENTENCE_LENGTH = 10
+def fill_mask(masked_input, model, tokenizer, topk=5):
+    # Adapted from https://github.com/pytorch/fairseq/blob/master/fairseq/models/roberta/hub_interface.py
+    assert masked_input.count("<mask>") == 1
+    input_ids = torch.tensor(tokenizer.encode(masked_input, add_special_tokens=True)).unsqueeze(0)  # Batch size 1
 
-def unicodeToAscii(s):
-    return ''.join(
-        c for c in unicodedata.normalize('NFD', s)
-        if unicodedata.category(c) != 'Mn'
+    for i in range(input_ids.shape[-1]):
+        print(tokenizer.decode(input_ids[0][i]), end=" ")
+
+    logits = model(input_ids)[0]  # The last hidden-state is the first element of the output tuple
+    masked_index = (input_ids.squeeze() == tokenizer.mask_token_id).nonzero().item()
+    logits = logits[0, masked_index, :]
+    prob = logits.softmax(dim=0)
+    values, indices = prob.topk(k=topk, dim=0)
+    topk_predicted_token_bpe = " ".join(
+        [tokenizer.convert_ids_to_tokens(indices[i].item()) for i in range(len(indices))]
     )
-
-# Lowercase, trim, and remove non-letter characters
-
-
-def normalizeString(s):
-    s = unicodeToAscii(s.lower().strip())
-    s = re.sub(r"([.!?])", r" \1", s)
-    s = re.sub(r"[^a-zA-Z.!?]+", r" ", s)
-    return s
-
-
-def sentenceToTensor(s, lang):
-    splitted_s = s.split(" ")
-    splitted_s.insert(0, "SOS")
-    splitted_s[-1] = "EOS"
-    indexes = [lang.word2index[word] for word in splitted_s]
-    return torch.tensor(indexes, dtype=torch.long)
-
-df = pd.read_csv('fra_sentences.tsv', delimiter="\t",)
-
-sentences = df[df.columns[2]].tolist()
-
-lang = Lang()
-list_norm_sentences = []
-
-for s in sentences:
-    norm_s = normalizeString(unicodeToAscii(s))
-    splitted_norm_s = norm_s.split(" ")
-    if(len(splitted_norm_s) <= MAX_SENTENCE_LENGTH):
-        list_norm_sentences.append(norm_s)
-        lang.addSplittedSentence(splitted_norm_s)
+    masked_token = tokenizer.mask_token
+    topk_filled_outputs = []
+    for index, predicted_token_bpe in enumerate(topk_predicted_token_bpe.split(" ")):
+        predicted_token = predicted_token_bpe.replace("\u2581", " ")
+        if " {0}".format(masked_token) in masked_input:
+            topk_filled_outputs.append(
+                (
+                    masked_input.replace(" {0}".format(masked_token), predicted_token),
+                    values[index].item(),
+                    predicted_token,
+                )
+            )
+        else:
+            topk_filled_outputs.append(
+                (masked_input.replace(masked_token, predicted_token), values[index].item(), predicted_token,)
+            )
+    return topk_filled_outputs
 
 
-print(len(list_norm_sentences), "sentences, ", lang.n_words, "words.")
 
+tokenizer = AutoTokenizer.from_pretrained("camembert-base")
 
-model = RNN(lang.n_words, 512)
-model_optimizer = optim.SGD(model.parameters(), lr=0.01)
-criterion = nn.NLLLoss()
+model = CamembertForMaskedLM.from_pretrained("camembert-base")
+model.eval()
 
-tot_iter = 500000
-plot_loss = [-1]
-loss_tot = 0
-plot_every = 5000
-
-for iter in range(1, tot_iter+1):
-    s = list_norm_sentences[random.randint(0,len(list_norm_sentences))]
-
-    tens = sentenceToTensor(s, lang)
-    model_optimizer.zero_grad()
-    hidden = model.initHidden()
-    loss = 0
-    for i in range(tens.size(0)-1):
-        output, hidden = model(tens[i], hidden)
-        loss += criterion(output.squeeze(), tens[i+1])
-
-    loss.backward()
-    model_optimizer.step()
-
-    loss_tot += loss.item()
-
-    if(iter%plot_every==0):
-        plot_loss.append(loss_tot/plot_every)
-        loss_tot = 0
-        print()
-        plt.plot(plot_loss[1:])  
-        plt.ylabel('Loss')       
-        plt.savefig("./loss.png")
-        torch.save(model.state_dict(), './model.n')
-
-    print("\rIter: {}/{}, last loss : {:.2f}".format(iter, tot_iter, plot_loss[-1]), end="")
-
+masked_input = "La castagnette est <mask>"
+print(fill_mask(masked_input, model, tokenizer))
