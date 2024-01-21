@@ -1,0 +1,251 @@
+<s> you received three phone calls while you were out </s>
+<s> i am going to drop two classes this semester </s>
+<s> the oil in my car needs to be changed </s>
+<s> that tie does not match the shirt you're wearing </s>
+<s> i really don't like your boyfriend </s>
+<s> the changing of the leaves is always so beautiful </s>
+<s> you look like you've had a long day </s>
+<s> this bus is taking forever to get here </s>
+<s> this test was harder than i thought i should have prepared more </s>
+<s> i love your pumpkin </s>
+<s> tiffany had a baby girl and named her madison </s>
+<s> you should wear a red tie with the gray suit </s>
+<s> your hair cut looks really good </s>
+<s> you need to study more </s>
+<s> i'm sorry i didn't see you in the blind spot </s>
+<s> this hamburger is under cooked </s>
+<s> this is a gift for a friends wedding </s>
+<s> see you around </s>
+<s> i can't believe i did this well </s>
+<s> i love your new haircut </s>
+<s> thanks for helping me out </s>
+<s> i hope you can come and visit me soon </s>
+<s> you played a really good game </s>
+<s> have a good time on your trip and don't spend too much money </s>
+<s> it's really nice out today </s>
+<s> i'll have the special </s>
+<s> i would like to be on your mailing list </s>
+<s> this class is really hard </s>
+<s> thank you for writing my recommendation </s>
+<s> you look nice today </s>
+<s> i haven't talked to you for awhile </s>
+<s> i hope to see you soon </s>
+<s> i miss you </s>
+<s> i can't wait until our time together </s>
+<s> nice day we are having </s>
+<s> i'd like fries with that </s>
+<s> no thank you i'm just looking </s>
+<s> i'm fine thank you </s>
+<s> i can't believe we are past midterms </s>
+<s> yes i will give you a ride to class </s>
+<s> i am studying very hard </s>
+<s> my car is running fine </s>
+<s> i don't play bingo very often </s>
+<s> i am much older than you nine years older </s>
+<s> i don't own a watch </s>
+<s> i want a diet coke i said diet coke </s>
+<s> i like my own shoes i used to have a pair like yours then i got a job </s>
+<s> you need to go get your suit on </s>
+<s> i though that the pop quiz was unfair </s>
+<s> i don't think i'm going to make it through class today </s>
+<s> i need money for gas </s>
+<s> the football game was exciting </s>
+<s> the chicago bears are my favorite team </s>
+<s> i like this sweater best </s>
+<s> it sure is cold outside today </s>
+<s> boy am i hungry </s>
+<s> this is a really good sale </s>
+<s> i had no idea what that teacher wanted for that question </s>
+<s> i don't understand </s>
+<s> i think you should invite him to our party </s>
+<s> yes i am studying hard </s>
+<s> i think gunnar is growing up too fast </s>
+<s> i don't think your wife likes me </s>
+<s> i don't understand why you're so upset </s>
+<s> i'm not sure where that address is </s>
+<s> no i don't want onions on it </s>
+<s> i forgot my checkbook i'll be right back </s>
+<s> no i don't know where she lives </s>
+<s> i don't think i should have received that grade </s>
+<s> i can't believe you are moving out in less that two months </s>
+<s> i may be able to make your appointment with you on thursday </s>
+<s> i really feel that i need to come to wisconsin regardless of what my current situation is </s>
+<s> i can't even remember how long it has been since i have last seen you </s>
+<s> have a safe flight out to california </s>
+<s> thanks for opening the door </s>
+<s> you are out of napkins </s>
+<s> there is no salesperson in the shoe department </s>
+<s> i'm excited to go to graduate school </s>
+<s> i like your new outfit </s>
+<s> give me a call sometime and we'll get together </s>
+<s> i'll give you a call sometime this week </s>
+<s> my car isn't running very well </s>
+<s> you need to pick up your room </s>
+<s> i can't wait to graduate </s>
+<s> excuse me i didn't see you </s>
+<s> that will be all thanks </s>
+<s> no thanks i'm just looking </s>
+<s> i think this class is really hard </s>
+<s> i don't understand this theory </s>
+<s> i can't wait for thanksgiving break </s>
+<s> you should discipline him more </s>
+<s> you really should write a cookbook </s>
+<s> i think grandma's lonely </s>
+<s> gotta love you relatives </s>
+<s> the weather sure is beautiful </s>
+<s> i like your outfit </s>
+<s> great window display </s>
+<s> they sure have great food here </s>
+<s> the videotapes were too long </s>
+<s> the band these days is playing at people's on wednesday </s>
+<s> i couldn't believe we wont the game saturday </s>
+<s> there were so many alums out on saturday night </s>
+<s> i wish you could come out here and visit soon </s>
+<s> you can borrow the car this wednesday </s>
+<s> i am from west des moines </s>
+<s> i would like a cheeseburger fries and a coke </s>
+<s> i would like to try this on </s>
+<s> i will probably go out this wednesday </s>
+<s> i would like to talk to you about the last test i took </s>
+<s> i'll be at your party friday night </s>
+<s> classes are going very well this semester </s>
+<s> i'll pay you back as soon as i can </s>
+<s> i'm glad your relationship is working out </s>
+<s> i need your advice on what to do about grad school </s>
+<s> the weather is great today </s>
+<s> i'll be paying in cash </s>
+<s> i'm just looking right now thanks </s>
+<s> you look very nice today </s>
+<s> i need to talk to you about my grade </s>
+<s> i am feeling totally overwhelmed in brain and behavior </s>
+<s> you keep eating so you can get better and we'll go riding </s>
+<s> i want to sit in on ryan's class </s>
+<s> i haven't been able to get hold of you because i've been so busy </s>
+<s> sure i can give you a ride </s>
+<s> i'm trying to find a movie </s>
+<s> i'll take one of them </s>
+<s> i'm sorry i didn't see you </s>
+<s> this graduate school business is really frightening </s>
+<s> you really would have donated matt's body to science if he hadn't died suddenly </s>
+<s> have you and dad been able to go out bicycling </s>
+<s> what have the doctors told you about your white cells </s>
+<s> now that you're living in cedar rapids what are you doing </s>
+<s> did danny get to play much this year </s>
+<s> how many children do you have </s>
+<s> could i get stone ground mustard instead of yellow </s>
+<s> are you out of anne of green gables </s>
+<s> so have you seen so and so lately </s>
+<s> what is included in the letter of application for grad school </s>
+<s> what time is your halloween party </s>
+<s> do you mind if i do some laundry at home this weekend </s>
+<s> could i borrow fifty dollars </s>
+<s> what is your new girlfriend like </s>
+<s> do you mind if i stay at your house this weekend </s>
+<s> could you tell me what time it is </s>
+<s> may i have some extra ketchup please </s>
+<s> do you have this in a different color </s>
+<s> what are you doing this weekend </s>
+<s> is the final exam comprehensive </s>
+<s> do you have any tests this week </s>
+<s> can you please put some money in my account </s>
+<s> did u come up for the homecoming game on saturday </s>
+<s> how has school been going </s>
+<s> what did u do on saturday night </s>
+<s> do you know what time it is </s>
+<s> do you know how much this prescription costs </s>
+<s> is this outfit on sale </s>
+<s> did you have fun this weekend </s>
+<s> are you moving the test from friday to monday </s>
+<s> what time do you want to leave tomorrow </s>
+<s> do you want to get together next week </s>
+<s> how's the race car coming along </s>
+<s> how's the married life going </s>
+<s> have you seen tilly lately </s>
+<s> is it extra for the sour cream </s>
+<s> can you gift wrap that </s>
+<s> did you see the game </s>
+<s> can the final be moved to another time </s>
+<s> how are your classes going </s>
+<s> can i have some money </s>
+<s> did you take a look at my car </s>
+<s> when is your football game </s>
+<s> do you want to go to the store with me </s>
+<s> excuse me do you know what time it is </s>
+<s> what's today's date </s>
+<s> how much does this cost </s>
+<s> when is our final exam </s>
+<s> has your game of golf improved recently </s>
+<s> is the staff treating you well </s>
+<s> can i come up to wisconsin this week </s>
+<s> do you have any more pain from your burning accident </s>
+<s> do you get any leads on if you can become a successful photographer </s>
+<s> do you know how to get to chicago from iowa </s>
+<s> can i have a large orange drink with no ice </s>
+<s> when will this perfume be on sale </s>
+<s> do you have fun cleaning up the football stadium </s>
+<s> can you write me a good recommendation for graduate school </s>
+<s> when is our halloween party </s>
+<s> what time are you picking me up friday </s>
+<s> what does your tux look like </s>
+<s> can i wear your jeans today </s>
+<s> do you know what time it is </s>
+<s> do you have any specials today </s>
+<s> do you accept discover card </s>
+<s> who were you fighting with today </s>
+<s> are we having any homework today </s>
+<s> what are you taking next semester </s>
+<s> should i quit my job </s>
+<s> are you going to be coming home this weekend </s>
+<s> how is school going </s>
+<s> how does my hair look this way </s>
+<s> do you know the time </s>
+<s> what is the special today </s>
+<s> do you have this shirt in a smaller size </s>
+<s> how are your classes going this semester </s>
+<s> can i set up a time to come see you </s>
+<s> will you get me a pop please </s>
+<s> will you please send me some money </s>
+<s> is mom going to send me some money </s>
+<s> how is your son doing </s>
+<s> did you have a happy birthday </s>
+<s> where is the nearest telephone </s>
+<s> do you like my hat </s>
+<s> how much does this shirt cost </s>
+<s> can i borrow your notes please </s>
+<s> how am i doing in class so far </s>
+<s> how's it going </s>
+<s> how are you </s>
+<s> how are you </s>
+<s> what's new with you </s>
+<s> how is everything with you </s>
+<s> nice day we are having </s>
+<s> how much are you asking for that </s>
+<s> can i help you find anything </s>
+<s> how's it going </s>
+<s> can we have more time to work on this </s>
+<s> what kind of music do you listen to </s>
+<s> how long does it take to cook bbq pork chops </s>
+<s> who won the football game on saturday </s>
+<s> how are you doing in school this year </s>
+<s> have you net an interesting guys lately </s>
+<s> is this a good restaurant </s>
+<s> what is your special today </s>
+<s> what kind of music do you listen to </s>
+<s> how many credits do i need for a minor in theatre </s>
+<s> can we go shopping </s>
+<s> when are you coming back home </s>
+<s> when is your basketball game </s>
+<s> would you do me a favor </s>
+<s> would you happen to know the correct time </s>
+<s> what kind of diet pop do you have </s>
+<s> did u have a good weekend </s>
+<s> do i have to take library </s>
+<s> what time is your next class </s>
+<s> can you get this ketchup stain out of this blouse </s>
+<s> can i borrow that sweatshirt for the football game tonight </s>
+<s> did you get your hair cut </s>
+<s> could you tell me where ross hall is </s>
+<s> do you have any more bananas </s>
+<s> will these jeans shrink after washing </s>
+<s> how are you classes going are they pretty tough this semester </s>
+<s> will this be graded on a curve or straight percentage </s>
