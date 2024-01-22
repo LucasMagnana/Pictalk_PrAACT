@@ -27,10 +27,10 @@ for i in range(len(list_original_sentences)):
     if(len(final_sentence) > 0):
         dataset.append(final_sentence)
 
-with open("./files/aactext_train.dt", "wb") as outfile:
+with open("./datasets/aactext_train.dt", "wb") as outfile:
     pickle.dump(dataset, outfile)
 
-with open("./files/aactext_train.dt", "rb") as infile:
+with open("./datasets/aactext_train.dt", "rb") as infile:
     d = pickle.load(infile)
 
 print(d)
