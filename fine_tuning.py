@@ -70,9 +70,10 @@ if __name__ == '__main__':
         output_dir=f"models/pictalk",
         overwrite_output_dir=True,
         evaluation_strategy="epoch",
+        num_train_epochs=50,
         learning_rate=1e-5,
-        adam_beta1 = 0.9,
-        adam_beta2 = 0.999,
+        adam_beta1 =0.9,
+        adam_beta2 =0.999,
         weight_decay=0.01,
         per_device_train_batch_size=args.batch_size,
         per_device_eval_batch_size=args.batch_size,
@@ -90,9 +91,6 @@ if __name__ == '__main__':
         tokenizer=tokenizer,
     )
 
-    for _ in range(50):
-        trainer.train()
-        eval_results = trainer.evaluate()
-        print(f">>> Perplexity: {math.exp(eval_results['eval_loss']):.2f}")
+    trainer.train()
     trainer.push_to_hub("LucasMagnana/Pictalk")
 
