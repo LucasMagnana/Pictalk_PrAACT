@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-cs", "--chunk-size", type=int, default=24)
+    parser.add_argument("-cs", "--chunk-size", type=int, default=20)
     parser.add_argument("-bs", "--batch-size", type=int, default=128)
     parser.add_argument("--map-dataset", action="store_true")
 
