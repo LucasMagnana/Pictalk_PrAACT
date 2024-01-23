@@ -1,36 +1,39 @@
 import spacy
-from os import walk
-import xml.etree.ElementTree as ET
-import pickle
+from datasets import load_dataset
+import string
 
 nlp = spacy.load("en_core_web_sm")
 
 authorized_pos = ["ADJ", "NOUN", "PRON", "VERB", "ADV"]
 
-with open("./datasets/aac_comm/sent_train_aac.txt", "r") as file:
-    list_original_sentences = file.readlines()
+translator = str.maketrans('', '', string.punctuation)
 
-dataset = []
+for set in ["train", "test", "dev"]:
 
-for i in range(len(list_original_sentences)):
-    original_sentence = list_original_sentences[i].removesuffix('\n')
-    if("," in original_sentence):
-        continue
-    final_sentence = ""
-    doc = nlp(original_sentence)
-    for token in doc:
-        if(token.pos_ in authorized_pos):
-            if(len(final_sentence) > 0):
-                final_sentence += " "
-            final_sentence += token.lemma_
-    dataset.append(original_sentence)
-    if(len(final_sentence) > 0):
-        dataset.append(final_sentence)
+    with open("./datasets/aac_comm/sent_"+set+"_aac.txt", "r") as file:
+        list_original_sentences = file.readlines()
 
-with open("./datasets/aactext_train.dt", "wb") as outfile:
-    pickle.dump(dataset, outfile)
+    dataset = ""
+    print(set, ":", len(list_original_sentences))
+    for i in range(len(list_original_sentences)):
+        original_sentence = list_original_sentences[i].removesuffix('\n').translate(translator)
+        if("," in original_sentence):
+            continue
+        final_sentence = ""
+        doc = nlp(original_sentence)
+        for token in doc:
+            if(token.pos_ in authorized_pos):
+                if(len(final_sentence) > 0):
+                    final_sentence += " "
+                final_sentence += token.lemma_
+        if(len(final_sentence) > 0):
+            dataset += original_sentence+"\n"
+            dataset += final_sentence+"\n"
+    print(set, ":", dataset.count("\n"))
+    with open("./datasets/aactext_"+set+".txt", "w") as outfile:
+        outfile.write(dataset)
 
-with open("./datasets/aactext_train.dt", "rb") as infile:
-    d = pickle.load(infile)
+dataset = load_dataset("text", data_files={"train": "./datasets/aactext_train.txt", "test": ["./datasets/aactext_test.txt","./datasets/aactext_dev.txt"]})
+dataset.push_to_hub("LucasMagnana/aactext")
 
-print(d)
+    

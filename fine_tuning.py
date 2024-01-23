@@ -1,6 +1,6 @@
 #https://huggingface.co/learn/nlp-course/chapter7/3
 
-from transformers import AutoModelForMaskedLM, AutoTokenizer, DataCollatorForLanguageModeling, default_data_collator, TrainingArguments, Trainer
+from transformers import AutoModelForMaskedLM, AutoTokenizer, DataCollatorForWholeWordMask, TrainingArguments, Trainer
 import torch
 from datasets import load_dataset, load_from_disk
 import os
@@ -36,49 +36,43 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-cs", "--chunk-size", type=int, default=64)
-    parser.add_argument("-bs", "--batch-size", type=int, default=64)
+    parser.add_argument("-cs", "--chunk-size", type=int, default=24)
+    parser.add_argument("-bs", "--batch-size", type=int, default=128)
+    parser.add_argument("--map-dataset", action="store_true")
 
     args = parser.parse_args()
 
-    model_checkpoint = "distilbert-base-uncased"
+    model_checkpoint = "bert-large-uncased-whole-word-masking"
     model = AutoModelForMaskedLM.from_pretrained(model_checkpoint)
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
-    if(not os.path.exists("./datasets/lm_imdb_"+str(args.chunk_size))):
-        if(not os.path.exists("./datasets/lm_imdb")):
-            imdb_dataset = load_dataset("imdb")
-            tokenized_datasets = imdb_dataset.map(
-                tokenize_function, batched=True, remove_columns=["text", "label"]
-            )
-            tokenized_datasets.save_to_disk("./datasets/lm_imdb")
-        else:
-            tokenized_datasets = load_from_disk("./datasets/lm_imdb")
+    if(args.map_dataset):
+
+        aac_dataset = load_dataset("LucasMagnana/aactext")
+        tokenized_datasets = aac_dataset.map(
+            tokenize_function, batched=True, remove_columns=["text"]
+        )
 
         lm_datasets = tokenized_datasets.map(group_texts, batched=True)
 
-        lm_datasets.save_to_disk("./datasets/lm_imdb_"+str(args.chunk_size))
+        lm_datasets.push_to_hub("LucasMagnana/aactext")
+
     else:
-        lm_datasets = load_from_disk("./datasets/lm_imdb_"+str(args.chunk_size))
-
-    train_size = 10000
-    test_size = int(0.1 * train_size)
-
-    downsampled_dataset = lm_datasets["train"].train_test_split(
-        train_size=train_size, test_size=test_size, seed=42
-    )
+        lm_datasets = load_dataset("LucasMagnana/aactext")
 
     # Show the training loss with every epoch
-    logging_steps = len(downsampled_dataset["train"]) // args.batch_size
+    logging_steps = len(lm_datasets["train"]) // args.batch_size
     model_name = model_checkpoint.split("/")[-1]
 
-    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm_probability=0.15)
+    data_collator = DataCollatorForWholeWordMask(tokenizer=tokenizer, mlm_probability=0.15)
 
     training_args = TrainingArguments(
         output_dir=f"models/pictalk",
         overwrite_output_dir=True,
         evaluation_strategy="epoch",
-        learning_rate=2e-5,
+        learning_rate=1e-5,
+        adam_beta1 = 0.9,
+        adam_beta2 = 0.999,
         weight_decay=0.01,
         per_device_train_batch_size=args.batch_size,
         per_device_eval_batch_size=args.batch_size,
@@ -90,15 +84,13 @@ if __name__ == '__main__':
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=downsampled_dataset["train"],
-        eval_dataset=downsampled_dataset["test"],
+        train_dataset=lm_datasets["train"],
+        eval_dataset=lm_datasets["test"],
         data_collator=data_collator,
         tokenizer=tokenizer,
     )
 
-    num_train_epochs = 4
-
-    for _ in range(num_train_epochs):
+    for _ in range(50):
         trainer.train()
         eval_results = trainer.evaluate()
         print(f">>> Perplexity: {math.exp(eval_results['eval_loss']):.2f}")
