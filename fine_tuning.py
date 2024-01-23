@@ -96,7 +96,7 @@ if __name__ == '__main__':
         tokenizer=tokenizer,
     )
 
-    num_train_epochs = 3
+    num_train_epochs = 4
 
     for _ in range(num_train_epochs):
         trainer.train()
