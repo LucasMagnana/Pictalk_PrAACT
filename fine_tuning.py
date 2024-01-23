@@ -94,5 +94,5 @@ if __name__ == '__main__':
         trainer.train()
         eval_results = trainer.evaluate()
         print(f">>> Perplexity: {math.exp(eval_results['eval_loss']):.2f}")
-    trainer.push_to_hub()
+    trainer.push_to_hub("LucasMagnana/Pictalk")
 
