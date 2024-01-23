@@ -1,6 +1,6 @@
 #https://huggingface.co/learn/nlp-course/chapter7/3
 
-from transformers import AutoModelForMaskedLM, AutoTokenizer, DataCollatorForWholeWordMask, TrainingArguments, Trainer
+from transformers import AutoModelForMaskedLM, AutoTokenizer, DataCollatorForWholeWordMask, DataCollatorForLanguageModeling, TrainingArguments, Trainer
 import torch
 from datasets import load_dataset, load_from_disk
 import os
@@ -42,13 +42,13 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    model_checkpoint = "bert-large-uncased-whole-word-masking"
+    model_checkpoint = "google/mobilebert-uncased"
     model = AutoModelForMaskedLM.from_pretrained(model_checkpoint)
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
     if(args.map_dataset):
 
-        aac_dataset = load_dataset("LucasMagnana/aactext")
+        aac_dataset = load_dataset("LucasMagnana/aactext_text")
         tokenized_datasets = aac_dataset.map(
             tokenize_function, batched=True, remove_columns=["text"]
         )
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     logging_steps = len(lm_datasets["train"]) // args.batch_size
     model_name = model_checkpoint.split("/")[-1]
 
-    data_collator = DataCollatorForWholeWordMask(tokenizer=tokenizer, mlm_probability=0.15)
+    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm_probability=0.15)
 
     training_args = TrainingArguments(
         output_dir=f"models/pictalk",
@@ -92,5 +92,5 @@ if __name__ == '__main__':
     )
 
     trainer.train()
-    trainer.push_to_hub("LucasMagnana/Pictalk")
+    trainer.push_to_hub("LucasMagnana/Pictalk_mobile")
 
