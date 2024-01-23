@@ -64,7 +64,7 @@ if __name__ == '__main__':
     logging_steps = len(lm_datasets["train"]) // args.batch_size
     model_name = model_checkpoint.split("/")[-1]
 
-    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm_probability=0.15)
+    data_collator = DataCollatorForWholeWordMask(tokenizer=tokenizer, mlm_probability=0.15)
 
     training_args = TrainingArguments(
         output_dir=f"models/pictalk",
