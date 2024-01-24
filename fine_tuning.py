@@ -150,9 +150,9 @@ if __name__ == '__main__':
 
         print(f">>> Epoch {epoch}: Loss:{torch.mean(losses)}, Perplexity: {perplexity}")
 
-        # Save and upload
-        accelerator.wait_for_everyone()
-        print("LucasMagnana/"+model_name)
-        model.push_to_hub("LucasMagnana/"+model_name)
-        tokenizer.push_to_hub("LucasMagnana/"+model_name)
+    # Save and upload
+    accelerator.wait_for_everyone()
+    print("LucasMagnana/"+model_name)
+    model.push_to_hub("LucasMagnana/"+model_name)
+    tokenizer.push_to_hub("LucasMagnana/"+model_name)
 
