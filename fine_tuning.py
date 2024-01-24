@@ -1,10 +1,10 @@
-#https://huggingface.co/learn/nlp-course/chapter7/3
+#This file is an adaptation of the tutorial available at : https://huggingface.co/learn/nlp-course/chapter7/3
 
 from transformers import AutoModelForMaskedLM, AutoTokenizer, DataCollatorForWholeWordMask, DataCollatorForLanguageModeling, TrainingArguments, get_scheduler
 import torch
 from torch.utils.data import DataLoader
 from torch.optim import Adam
-from datasets import load_dataset, load_from_disk
+from datasets import load_dataset
 import os
 import collections
 import numpy as np

@@ -1,10 +1,12 @@
-from transformers import pipeline
-import pickle
-from transformers import AutoModelForMaskedLM, AutoTokenizer
+from datasets import load_dataset
+from transformers import AutoModelForMaskedLM, AutoTokenizer, AutoConfig
 import torch
+from huggingface_hub import Repository
 
-model = AutoModelForMaskedLM.from_pretrained("LucasMagnana/Pictalk_mobile")
-tokenizer = AutoTokenizer.from_pretrained("LucasMagnana/Pictalk_mobile")
+model_name = "LucasMagnana/Pictalk"
+model = AutoModelForMaskedLM.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+d_pictos  = load_dataset("LucasMagnana/ARASAAC_CACE")["train"]
 
 text = "I want eat [MASK]"
 
@@ -17,32 +19,27 @@ mask_token_logits = token_logits[0, mask_token_index, :]
 top_5_tokens = torch.topk(mask_token_logits, 5, dim=1).indices[0].tolist()
 
 for token in top_5_tokens:
-    print(f"'>>> {text.replace(tokenizer.mask_token, tokenizer.decode([token]))}'")
+    print(f">>> {text.replace(tokenizer.mask_token, tokenizer.decode([token]))}")
 
 
-with open("pictos.tab", "rb") as infile:
-    pictos = pickle.load(infile)
-
-
-
+print("========================================")
+print("Encoding...")
 
 input_embeddings = model.get_input_embeddings()
-for i in range(len(pictos)):
+for i in range(len(d_pictos)):
+    pictos = d_pictos[i]["text"]
     embbed_matrix = torch.zeros(input_embeddings.weight.shape[1])
-    for word in pictos[i].split(" "):
+    for word in pictos.split(" "):
         t = tokenizer(word, return_tensors="pt")["input_ids"].squeeze()[1]
         embbed_matrix += input_embeddings(t)
+    embbed_matrix = (embbed_matrix/len(pictos.split(" "))).unsqueeze(0)
     if(i == 0):
-        out_layer_weight = (embbed_matrix/len(pictos[i].split(" "))).unsqueeze(0)
-    else:
-        out_layer_weight = torch.cat((out_layer_weight, (embbed_matrix/len(pictos[i].split(" "))).unsqueeze(0)))
-print(out_layer_weight.shape, model.cls.predictions.decoder.weight.shape)
-out_layer = torch.nn.Embedding(out_layer_weight.shape[0], out_layer_weight.shape[1])
+        out_layer_weight = torch.zeros((len(d_pictos), embbed_matrix.shape[-1]))
+    out_layer_weight[i] = embbed_matrix
+
+out_layer = torch.nn.Linear(out_layer_weight.shape[1], out_layer_weight.shape[0])
 out_layer.weight = torch.nn.Parameter(out_layer_weight)
 model.set_output_embeddings(out_layer)
-print(out_layer_weight.shape, model.cls.predictions.decoder.weight.shape, torch.all(model.cls.predictions.decoder.weight == out_layer_weight))
-
-print(model.cls.predictions.dense.weight.shape, model.cls.predictions.decoder.weight.shape)
 
 inputs = tokenizer(text, return_tensors="pt")
 token_logits = model(**inputs).logits
@@ -52,7 +49,8 @@ mask_token_logits = token_logits[0, mask_token_index, :]
 # Pick the [MASK] candidates with the highest logits
 top_5_tokens = torch.topk(mask_token_logits, 5, dim=1).indices[0].tolist()
 
-print(top_5_tokens)
-
 for token in top_5_tokens:
-    print(f"'>>> {text.replace(tokenizer.mask_token, tokenizer.decode([token]))}'")
+    print(f">>> {text.replace(tokenizer.mask_token, d_pictos[token]['text'])}(id {d_pictos[token]['id']})")
+
+model.push_to_hub(model_name+"_encoded")
+tokenizer.push_to_hub(model_name+"_encoded")
