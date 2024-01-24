@@ -38,11 +38,12 @@ if __name__ == '__main__':
 
     parser.add_argument("-cs", "--chunk-size", type=int, default=20)
     parser.add_argument("-bs", "--batch-size", type=int, default=128)
+    parser.add_argument("-m", "--model", type=str, default="bert-large-uncased")
     parser.add_argument("--map", action="store_true")
 
     args = parser.parse_args()
 
-    model_checkpoint = "bert-large-uncased"
+    model_checkpoint = args.model
     model = AutoModelForMaskedLM.from_pretrained(model_checkpoint)
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
@@ -65,6 +66,17 @@ if __name__ == '__main__':
     model_name = model_checkpoint.split("/")[-1]
 
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm_probability=0.15)
+
+    samples = [lm_datasets["train"][i] for i in range(2)]
+    for sample in samples:
+        _ = sample.pop("word_ids")
+
+
+    for chunk in samples:
+        print(f"\n>>> {tokenizer.decode(chunk['input_ids'])}")
+
+    for chunk in data_collator(samples)["input_ids"]:
+        print(f"\n'>>> {tokenizer.decode(chunk)}'")
 
     training_args = TrainingArguments(
         output_dir=f"models/pictalk",
@@ -92,5 +104,8 @@ if __name__ == '__main__':
     )
 
     trainer.train()
-    trainer.push_to_hub("LucasMagnana/Pictalk")
+    hub = "LucasMagnana/Pictalk"
+    if("mobile" in args.model):
+        hub += "_mobile"
+    trainer.push_to_hub(hub)
 
