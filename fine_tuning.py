@@ -38,15 +38,15 @@ if __name__ == '__main__':
 
     parser.add_argument("-cs", "--chunk-size", type=int, default=20)
     parser.add_argument("-bs", "--batch-size", type=int, default=128)
-    parser.add_argument("--map-dataset", action="store_true")
+    parser.add_argument("--map", action="store_true")
 
     args = parser.parse_args()
 
-    model_checkpoint = "google/mobilebert-uncased"
+    model_checkpoint = "bert-large-uncased"
     model = AutoModelForMaskedLM.from_pretrained(model_checkpoint)
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
-    if(args.map_dataset):
+    if(args.map):
 
         aac_dataset = load_dataset("LucasMagnana/aactext_text")
         tokenized_datasets = aac_dataset.map(
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     logging_steps = len(lm_datasets["train"]) // args.batch_size
     model_name = model_checkpoint.split("/")[-1]
 
-    data_collator = DataCollatorForWholeWordMask(tokenizer=tokenizer, mlm_probability=0.15)
+    data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm_probability=0.15)
 
     training_args = TrainingArguments(
         output_dir=f"models/pictalk",
@@ -92,5 +92,5 @@ if __name__ == '__main__':
     )
 
     trainer.train()
-    trainer.push_to_hub("LucasMagnana/Pictalk_mobile")
+    trainer.push_to_hub("LucasMagnana/Pictalk")
 
