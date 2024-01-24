@@ -1,12 +1,11 @@
 from transformers import pipeline
 
-mask_filler = pipeline(
-    "fill-mask", model="models/pictalk"
+fill_mask = pipeline(
+    "fill-mask",
+    model="google/mobilebert-uncased",
+    tokenizer="google/mobilebert-uncased"
 )
 
-text = text = "This is a great [MASK]."
-
-preds = mask_filler(text)
-
-for pred in preds:
-    print(f">>> {pred['sequence']}")
+print(
+    fill_mask(f"HuggingFace is creating a [MASK] that the community uses to solve NLP tasks.")
+)

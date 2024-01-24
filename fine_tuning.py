@@ -1,13 +1,18 @@
 #https://huggingface.co/learn/nlp-course/chapter7/3
 
-from transformers import AutoModelForMaskedLM, AutoTokenizer, DataCollatorForWholeWordMask, DataCollatorForLanguageModeling, TrainingArguments, Trainer
+from transformers import AutoModelForMaskedLM, AutoTokenizer, DataCollatorForWholeWordMask, DataCollatorForLanguageModeling, TrainingArguments, get_scheduler
 import torch
+from torch.utils.data import DataLoader
+from torch.optim import Adam
 from datasets import load_dataset, load_from_disk
 import os
 import collections
 import numpy as np
 import math
 import argparse
+from accelerate import Accelerator
+from tqdm.auto import tqdm
+from huggingface_hub import get_full_repo_name, Repository
 
 def tokenize_function(examples):
     result = tokenizer(examples["text"])
@@ -47,6 +52,12 @@ if __name__ == '__main__':
     model = AutoModelForMaskedLM.from_pretrained(model_checkpoint)
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
+    model_name = "Pictalk"
+    data_name = "aactext"
+    if("mobile" in args.model):
+        model_name += "_mobile"
+        data_name += "_mobile"
+
     if(args.map):
 
         aac_dataset = load_dataset("LucasMagnana/aactext_text")
@@ -56,18 +67,17 @@ if __name__ == '__main__':
 
         lm_datasets = tokenized_datasets.map(group_texts, batched=True)
 
-        lm_datasets.push_to_hub("LucasMagnana/aactext")
+        lm_datasets.push_to_hub("LucasMagnana/"+data_name)
 
     else:
-        lm_datasets = load_dataset("LucasMagnana/aactext")
+        lm_datasets = load_dataset("LucasMagnana/"+data_name)
 
     # Show the training loss with every epoch
     logging_steps = len(lm_datasets["train"]) // args.batch_size
-    model_name = model_checkpoint.split("/")[-1]
 
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm_probability=0.15)
 
-    samples = [lm_datasets["train"][i] for i in range(2)]
+    '''samples = [lm_datasets["train"][i] for i in range(2)]
     for sample in samples:
         _ = sample.pop("word_ids")
 
@@ -76,36 +86,73 @@ if __name__ == '__main__':
         print(f"\n>>> {tokenizer.decode(chunk['input_ids'])}")
 
     for chunk in data_collator(samples)["input_ids"]:
-        print(f"\n'>>> {tokenizer.decode(chunk)}'")
+        print(f"\n'>>> {tokenizer.decode(chunk)}'")'''  
 
-    training_args = TrainingArguments(
-        output_dir=f"models/pictalk",
-        overwrite_output_dir=True,
-        evaluation_strategy="epoch",
-        num_train_epochs=50,
-        learning_rate=1e-5,
-        adam_beta1 =0.9,
-        adam_beta2 =0.999,
-        weight_decay=0.01,
-        per_device_train_batch_size=args.batch_size,
-        per_device_eval_batch_size=args.batch_size,
-        push_to_hub=True,
-        fp16=True,
-        logging_steps=logging_steps,
+    train_dataloader = DataLoader(
+        lm_datasets["train"].remove_columns(["word_ids", "labels"]),
+        shuffle=True,
+        batch_size=args.batch_size,
+        collate_fn=data_collator,
     )
 
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=lm_datasets["train"],
-        eval_dataset=lm_datasets["test"],
-        data_collator=data_collator,
-        tokenizer=tokenizer,
+    eval_dataloader = DataLoader(
+    lm_datasets["test"].remove_columns(["word_ids", "labels"]), batch_size=args.batch_size, collate_fn=data_collator
+)
+
+
+    optimizer = Adam(model.parameters(), lr=1e-5)
+
+    accelerator = Accelerator()
+    model, optimizer, train_dataloader, eval_dataloader = accelerator.prepare(
+    model, optimizer, train_dataloader, eval_dataloader)
+
+    num_train_epochs = 50
+    num_update_steps_per_epoch = len(train_dataloader)
+    num_training_steps = num_train_epochs * num_update_steps_per_epoch
+
+    lr_scheduler = get_scheduler(
+    "linear",
+    optimizer=optimizer,
+    num_warmup_steps=0,
+    num_training_steps=num_training_steps,
     )
 
-    trainer.train()
-    hub = "LucasMagnana/Pictalk"
-    if("mobile" in args.model):
-        hub += "_mobile"
-    trainer.push_to_hub(hub)
+    progress_bar = tqdm(range(num_training_steps))
+
+    for epoch in range(num_train_epochs):
+        # Training
+        model.train()
+        for batch in train_dataloader:
+            outputs = model(**batch)
+            loss = outputs.loss
+            accelerator.backward(loss)
+
+            optimizer.step()
+            lr_scheduler.step()
+            optimizer.zero_grad()
+            progress_bar.update(1)
+
+        # Evaluation
+        model.eval()
+        losses = []
+        for step, batch in enumerate(eval_dataloader):
+            with torch.no_grad():
+                outputs = model(**batch)
+            loss = outputs.loss
+            losses.append(accelerator.gather(loss.repeat(args.batch_size)))
+
+        losses = torch.cat(losses)
+        losses = losses[: len(lm_datasets["test"])]
+        try:
+            perplexity = math.exp(torch.mean(losses))
+        except OverflowError:
+            perplexity = float("inf")
+
+        print(f">>> Epoch {epoch}: Loss:{torch.mean(losses)}, Perplexity: {perplexity}")
+
+        # Save and upload
+        accelerator.wait_for_everyone()
+        print("LucasMagnana/"+model_name)
+        model.push_to_hub("LucasMagnana/"+model_name)
+        tokenizer.push_to_hub("LucasMagnana/"+model_name)
 
