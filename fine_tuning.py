@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     parser.add_argument("-cs", "--chunk-size", type=int, default=20)
     parser.add_argument("-bs", "--batch-size", type=int, default=128)
-    parser.add_argument("-m", "--model", type=str, default="bert-large-uncased")
+    parser.add_argument("-m", "--model", type=str, default="distilbert-base-uncased")
     parser.add_argument("--map", action="store_true")
 
     args = parser.parse_args()
@@ -54,9 +54,13 @@ if __name__ == '__main__':
 
     model_name = "Pictalk"
     data_name = "aactext"
-    if("mobile" in args.model):
-        model_name += "_mobile"
-        data_name += "_mobile"
+    variants = ["mobile", "distil", "large"]
+    for v in variants:
+        if(v in args.model):
+            model_name += "_"+v
+            data_name += "_"+v
+
+
 
     if(args.map):
 

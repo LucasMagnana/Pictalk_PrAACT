@@ -5,7 +5,7 @@ import torch
 import os
 import pickle
 
-model_name = "LucasMagnana/Pictalk"
+model_name = "LucasMagnana/Pictalk_large"
 d_pictos  = load_dataset("LucasMagnana/ARASAAC_CACE")["train"]
 model = AutoModelForMaskedLM.from_pretrained(model_name)
 layer_file = hf_hub_download(repo_id=model_name, filename="encoded_layer.t")

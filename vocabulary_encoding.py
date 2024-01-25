@@ -64,6 +64,6 @@ api.upload_file(
     path_or_fileobj="./encoded_layer.t",
     path_in_repo="encoded_layer.t",
     repo_id=model_name,
-    repo_type="model",
+    repo_type="dataset",
 )
 
