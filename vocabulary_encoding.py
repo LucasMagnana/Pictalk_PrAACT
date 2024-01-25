@@ -4,7 +4,7 @@ import torch
 from huggingface_hub import Repository, HfApi
 import pickle
 
-model_name = "LucasMagnana/Pictalk"
+model_name = "LucasMagnana/Pictalk_distil"
 model = AutoModelForMaskedLM.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 d_pictos  = load_dataset("LucasMagnana/ARASAAC_CACE")["train"]
@@ -53,9 +53,6 @@ top_5_tokens = torch.topk(mask_token_logits, 5, dim=1).indices[0].tolist()
 for token in top_5_tokens:
     print(f">>> {text.replace(tokenizer.mask_token, d_pictos[token]['text'])}(id {d_pictos[token]['id']})")
 
-'''model.push_to_hub(model_name+"_encoded")
-tokenizer.push_to_hub(model_name+"_encoded")'''
-
 with open("./encoded_layer.t", "wb") as outfile:
     pickle.dump(out_layer, outfile)
 api = HfApi()
@@ -64,6 +61,6 @@ api.upload_file(
     path_or_fileobj="./encoded_layer.t",
     path_in_repo="encoded_layer.t",
     repo_id=model_name,
-    repo_type="dataset",
+    repo_type="model",
 )
 
