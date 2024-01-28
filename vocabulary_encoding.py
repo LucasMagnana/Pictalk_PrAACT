@@ -60,7 +60,7 @@ mask_token_logits = token_logits[0, mask_token_index, :]
 top_5_tokens = torch.topk(mask_token_logits, 5, dim=1).indices[0].tolist()
 
 for token in top_5_tokens:
-    print(f">>> {text.replace(tokenizer.mask_token, d_pictos[token]['text'])}(id {d_pictos[token]['id']})")
+    print(f">>> {text.replace(tokenizer.mask_token, d_pictos[token]['text'])}(id: {d_pictos[token]['id']})")
 
 with open("./encoded_layer.t", "wb") as outfile:
     pickle.dump(out_layer, outfile)

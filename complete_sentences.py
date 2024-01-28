@@ -41,4 +41,4 @@ if __name__ == '__main__':
             if(args.no_encode):
                 print(f">>> {text.replace('[MASK]', tokenizer.decode([token]))}")
             else:
-                print(f">>> {text.replace('[MASK]', d_pictos[token]['text'])}(id : {d_pictos[token]['id']})")
+                print(f">>> {text.replace('[MASK]', d_pictos[token]['text'])}(id: {d_pictos[token]['id']})")

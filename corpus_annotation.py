@@ -36,11 +36,12 @@ for set in ["train", "test", "dev"]:
         if(len(final_sentence) > 0):
             dataset[set].append({"text": original_sentence})
             dataset[set].append({"text": final_sentence})
-    print(set, "final size:", len(dataset[set]))
+    print(set, "set final size:", len(dataset[set]))
+    print("========================")
 
 test_set = dataset["test"]
 test_set.extend(dataset["dev"])
-dataset = {"train set": dataset["train"], "test": test_set}
+dataset = {"train": dataset["train"], "test": test_set}
 datasetdict = datasets.DatasetDict()
 for k in dataset:
     datasetdict[k] = datasets.Dataset.from_list(dataset[k])
