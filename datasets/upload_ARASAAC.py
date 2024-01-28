@@ -2,6 +2,7 @@ import requests
 import pickle
 import datasets
 
+repo_name = "LucasMagnana/"
 
 # Translate each line using Arasaac API
 pictos = []
@@ -15,6 +16,6 @@ for p in response.json():
             pictos_seen.append(p_text)
 print("size of dataset :", len(pictos))
 d_pictos = datasets.Dataset.from_list(pictos)
-d_pictos.push_to_hub("LucasMagnana/ARASAAC")
+d_pictos.push_to_hub(repo_name+"ARASAAC")
 
 

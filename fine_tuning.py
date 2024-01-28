@@ -1,18 +1,15 @@
 #This file is an adaptation of the tutorial available at : https://huggingface.co/learn/nlp-course/chapter7/3
 
-from transformers import AutoModelForMaskedLM, AutoTokenizer, DataCollatorForWholeWordMask, DataCollatorForLanguageModeling, TrainingArguments, get_scheduler
+from transformers import AutoModelForMaskedLM, AutoTokenizer, DataCollatorForLanguageModeling, get_scheduler
 import torch
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 from datasets import load_dataset
-import os
-import collections
 import numpy as np
 import math
 import argparse
 from accelerate import Accelerator
 from tqdm.auto import tqdm
-from huggingface_hub import get_full_repo_name, Repository
 
 def tokenize_function(examples):
     result = tokenizer(examples["text"])
@@ -43,8 +40,8 @@ if __name__ == '__main__':
 
     parser.add_argument("-cs", "--chunk-size", type=int, default=20)
     parser.add_argument("-bs", "--batch-size", type=int, default=128)
-    parser.add_argument("-m", "--model", type=str, default="distilbert-base-uncased")
-    parser.add_argument("--map", action="store_true")
+    parser.add_argument("-m", "--model", type=str, default="bert-large-uncased")
+    parser.add_argument("--preprocess", action="store_true")
 
     args = parser.parse_args()
 
@@ -52,6 +49,7 @@ if __name__ == '__main__':
     model = AutoModelForMaskedLM.from_pretrained(model_checkpoint)
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
 
+    repo_name = "LucasMagnana/"
     model_name = "Pictalk"
     data_name = "aactext"
     variants = ["mobile", "distil", "large"]
@@ -62,35 +60,24 @@ if __name__ == '__main__':
 
 
 
-    if(args.map):
+    if(args.preprocess):
 
-        aac_dataset = load_dataset("LucasMagnana/aactext_text")
+        aac_dataset = load_dataset(repo_name+"aactext_text")
         tokenized_datasets = aac_dataset.map(
             tokenize_function, batched=True, remove_columns=["text"]
         )
 
         lm_datasets = tokenized_datasets.map(group_texts, batched=True)
 
-        lm_datasets.push_to_hub("LucasMagnana/"+data_name)
+        lm_datasets.push_to_hub(repo_name+data_name)
 
     else:
-        lm_datasets = load_dataset("LucasMagnana/"+data_name)
+        lm_datasets = load_dataset(repo_name+data_name)
 
     # Show the training loss with every epoch
     logging_steps = len(lm_datasets["train"]) // args.batch_size
 
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm_probability=0.15)
-
-    '''samples = [lm_datasets["train"][i] for i in range(2)]
-    for sample in samples:
-        _ = sample.pop("word_ids")
-
-
-    for chunk in samples:
-        print(f"\n>>> {tokenizer.decode(chunk['input_ids'])}")
-
-    for chunk in data_collator(samples)["input_ids"]:
-        print(f"\n'>>> {tokenizer.decode(chunk)}'")'''  
 
     train_dataloader = DataLoader(
         lm_datasets["train"].remove_columns(["word_ids", "labels"]),
@@ -156,7 +143,7 @@ if __name__ == '__main__':
 
     # Save and upload
     accelerator.wait_for_everyone()
-    print("LucasMagnana/"+model_name)
-    model.push_to_hub("LucasMagnana/"+model_name)
-    tokenizer.push_to_hub("LucasMagnana/"+model_name)
+    print(repo_name+model_name)
+    model.push_to_hub(repo_name+model_name)
+    tokenizer.push_to_hub(repo_name+model_name)
 

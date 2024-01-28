@@ -6,20 +6,23 @@ import os
 import pickle
 import argparse
 
+repo_name = "LucasMagnana/"
+model_name = "Pictalk_large"
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-encode", action="store_true")
     args = parser.parse_args()
 
-    model_name = "LucasMagnana/Pictalk_distil"
-    d_pictos  = load_dataset("LucasMagnana/ARASAAC_CACE")["train"]
-    model = AutoModelForMaskedLM.from_pretrained(model_name)
+    d_pictos  = load_dataset(repo_name+"ARASAAC_CACE")["train"]
+    model = AutoModelForMaskedLM.from_pretrained(repo_name+model_name)
     if(not args.no_encode):
-        layer_file = hf_hub_download(repo_id=model_name, filename="encoded_layer.t")
+        #download the custom layer and switch the model decoder layer with it
+        layer_file = hf_hub_download(repo_id=repo_name+model_name, filename="encoded_layer.t")
         with open(layer_file, "rb") as infile:
             out_layer = pickle.load(infile)
         model.set_output_embeddings(out_layer)
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(repo_name+model_name)
 
     while(True):
         text = input("Please enter a sentence to complete (exit to stop) : ")

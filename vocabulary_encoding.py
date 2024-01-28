@@ -1,16 +1,20 @@
 from datasets import load_dataset
-from transformers import AutoModelForMaskedLM, AutoTokenizer, AutoConfig
+from transformers import AutoModelForMaskedLM, AutoTokenizer
 import torch
-from huggingface_hub import Repository, HfApi
+from huggingface_hub import HfApi
 import pickle
+import os
 
-model_name = "LucasMagnana/Pictalk_distil"
-model = AutoModelForMaskedLM.from_pretrained(model_name)
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+repo_name = "LucasMagnana/"
+model_name = "Pictalk_large"
+
+model = AutoModelForMaskedLM.from_pretrained(repo_name+model_name)
+tokenizer = AutoTokenizer.from_pretrained(repo_name+model_name)
 d_pictos  = load_dataset("LucasMagnana/ARASAAC_CACE")["train"]
 
 text = "I want eat [MASK]"
 
+#test the original model
 inputs = tokenizer(text, return_tensors="pt")
 token_logits = model(**inputs).logits
 # Find the location of [MASK] and extract its logits
@@ -26,6 +30,7 @@ for token in top_5_tokens:
 print("========================================")
 print("Encoding...")
 
+#create the embedding matrix
 input_embeddings = model.get_input_embeddings()
 for i in range(len(d_pictos)):
     pictos = d_pictos[i]["text"]
@@ -38,10 +43,14 @@ for i in range(len(d_pictos)):
         out_layer_weight = torch.zeros((len(d_pictos), embbed_matrix.shape[-1]))
     out_layer_weight[i] = embbed_matrix
 
+#create the custom decoder layer 
 out_layer = torch.nn.Linear(out_layer_weight.shape[1], out_layer_weight.shape[0])
+#change its weights to the values stored in the embedding matrix
 out_layer.weight = torch.nn.Parameter(out_layer_weight)
+#switch the model decoder layer with the custom on for testing
 model.set_output_embeddings(out_layer)
 
+#test the model
 inputs = tokenizer(text, return_tensors="pt")
 token_logits = model(**inputs).logits
 # Find the location of [MASK] and extract its logits
@@ -55,12 +64,14 @@ for token in top_5_tokens:
 
 with open("./encoded_layer.t", "wb") as outfile:
     pickle.dump(out_layer, outfile)
-api = HfApi()
 
+#upload the custom decoder layer on HuggingFace
+api = HfApi()
 api.upload_file(
     path_or_fileobj="./encoded_layer.t",
     path_in_repo="encoded_layer.t",
-    repo_id=model_name,
+    repo_id=repo_name+model_name,
     repo_type="model",
 )
+os.remove("./encoded_layer.t")
 

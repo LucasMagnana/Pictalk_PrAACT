@@ -1,8 +1,10 @@
 import requests
 import datasets
 
+repo_name = "LucasMagnana/"
+
 # Read the input file
-input_file = "./datasets/cace-vocab.txt"
+input_file = "./datasets/cace/vocab.txt"
 with open(input_file, "r") as file:
     lines = file.readlines()
 
@@ -28,4 +30,4 @@ for line in lines:
 # Write the translated lines to a new file
 print("size of dataset :", len(pictos))
 d_pictos = datasets.Dataset.from_list(pictos)
-d_pictos.push_to_hub("LucasMagnana/ARASAAC_CACE")
+d_pictos.push_to_hub(repo_name+"ARASAAC_CACE")
