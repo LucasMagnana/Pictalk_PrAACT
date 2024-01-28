@@ -7,7 +7,7 @@ import pickle
 import argparse
 
 repo_name = "LucasMagnana/"
-model_name = "Pictalk_large"
+model_name = "Pictalk_distil"
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

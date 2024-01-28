@@ -30,10 +30,10 @@ for set in ["train", "test", "dev"]:
         doc = nlp(original_sentence)
         for token in doc:
             if(token.pos_ in authorized_pos):
-                if(len(final_sentence) > 0):
+                if(len(final_sentence) > 0 and len(original_sentence.split()) >= 3):
                     final_sentence += " "
                 final_sentence += token.lemma_
-        if(len(final_sentence) > 0):
+        if(len(original_sentence.split()) >= 3 and len(final_sentence)>0):
             dataset[set].append({"text": original_sentence})
             dataset[set].append({"text": final_sentence})
     print(set, "set final size:", len(dataset[set]))
